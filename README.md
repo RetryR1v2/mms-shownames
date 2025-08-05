@@ -9,12 +9,12 @@
 - 3 Diffrent Display Modes
 - Customizable Color and Font and Size
 - Alias Request for Text Based Roleplay Server
-- Hides the text in Crouch, Ragdoll or Cover Stance
 - Feature to Delete Alias for yourself
 
 # Changelog
 
 - 1.1.0 Initial Release
+- 1.1.1 Fixed some Errors
 
 # installation 
 

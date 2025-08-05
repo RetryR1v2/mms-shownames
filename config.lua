@@ -30,6 +30,8 @@ Config.Scale = 0.5
 Config.TextOffset = 1.0 -- 0-2.0  0 is Mid of Fed 1.0 is Above Ped
 Config.Textfont = 1 --0-5
 
+Config.ShowTextOnStart = true -- If by Default the Names should be there
+
 Config.DisplayType = 2
 
 -- DisplayType 1 = Only Player Name or Alias

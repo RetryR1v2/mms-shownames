@@ -7,25 +7,35 @@ local AllPlayerData = {}
 Citizen.CreateThread(function ()
     while true do
         AllPlayerData = {}
-        Citizen.Wait(5000)
         if #GetPlayers() > 0 then
             for h,v in ipairs(GetPlayers()) do
                 local Character = VORPcore.getUser(v).getUsedCharacter
                 if Character ~= nil then
-                    local PlayerPed = VORPcore.Callback.TriggerAwait('mms-shownames:callback:RecivePlayerPedID',v)
                     if Character.firstname ~= nil and Character.lastname ~= nil then
+                        local PlayerPed = GetPlayerPed(v)
+                        local Coords = GetEntityCoords(PlayerPed)
                         local Name = Character.firstname .. ' ' .. Character.lastname
                         local CharID = Character.charIdentifier
                         local ServerID = v
                         local SteamID = Character.identifier
-                        local PlayerData = { Ped = PlayerPed, Name = Name, CharID = CharID, ServerID = ServerID, SteamID = SteamID }
+                        local Alias = ''
+                        local result = MySQL.query.await("SELECT * FROM mms_shownames WHERE charidentifier=@charidentifier", { ["@charidentifier"] = CharID})
+                        if #result > 0 then
+                            if result[1].aliasactive == 1 then
+                                Alias = result[1].alias
+                            end
+                        end
+                        if Alias ~= '' then
+                            Name = Alias
+                        end
+                        local PlayerData = { Ped = PlayerPed, Coords = Coords, Name = Name, CharID = CharID, ServerID = ServerID, SteamID = SteamID }
                         table.insert(AllPlayerData,PlayerData)
                         TriggerClientEvent('mms-shownames:client:UpdateAllPlayerData',v,AllPlayerData)
                     end
                 end
             end
         end
-        Citizen.Wait(5000)
+        Citizen.Wait(1)
     end
 end)
 
@@ -45,13 +55,12 @@ VORPcore.Callback.Register('mms-shownames:callback:GetCurrentName', function(sou
     cb(Alias)
 end)
 
--- Toggle Alias Callback
+-- Toggle Alias
 
-VORPcore.Callback.Register('mms-shownames:callback:ToggleAlias', function(source,cb)
+RegisterServerEvent('mms-shownames:server:ToggleAlias',function()
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
     local CharID = Character.charIdentifier
-    local Alias = ''
     local result = MySQL.query.await("SELECT * FROM mms_shownames WHERE charidentifier=@charidentifier", { ["@charidentifier"] = CharID})
     if #result > 0 then
         if result[1].aliasactive == 1 then
@@ -60,25 +69,14 @@ VORPcore.Callback.Register('mms-shownames:callback:ToggleAlias', function(source
             MySQL.update('UPDATE `mms_shownames` SET aliasactive = ?  WHERE charidentifier = ?',{1, CharID})
         end
     end
-    local result = MySQL.query.await("SELECT * FROM mms_shownames WHERE charidentifier=@charidentifier", { ["@charidentifier"] = CharID})
-    if #result > 0 then
-        if result[1].aliasactive == 1 then
-            Alias = result[1].alias
-        elseif result[1].aliasactive == 0 then
-            Alias = result[1].name
-        end
-    end
-    Citizen.Wait(500)
-    cb(Alias)
 end)
 
--- Delete Alias Callback
+-- Delete Alias
 
-VORPcore.Callback.Register('mms-shownames:callback:DeleteMyAlias', function(source,cb)
+RegisterServerEvent('mms-shownames:server:DeleteAlias',function()
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
     local CharID = Character.charIdentifier
-    local Alias = ''
     local result = MySQL.query.await("SELECT * FROM mms_shownames WHERE charidentifier=@charidentifier", { ["@charidentifier"] = CharID})
     if #result > 0 then
         if result[1].aliasactive == 1 then
@@ -87,8 +85,6 @@ VORPcore.Callback.Register('mms-shownames:callback:DeleteMyAlias', function(sour
     end
     MySQL.execute('DELETE FROM mms_shownames WHERE charidentifier = ?', { CharID }, function()
     end)
-    Citizen.Wait(500)
-    cb(Alias)
 end)
 
 -- Request Alias Command

@@ -1,15 +1,14 @@
 local VORPcore = exports.vorp_core:GetCore()
 
 local ShowText = false
-local Alias = ''
+
+if Config.ShowTextOnStart then
+    ShowText = true
+end
 
 RegisterNetEvent('vorp:SelectedCharacter')
 AddEventHandler('vorp:SelectedCharacter', function()
     Citizen.Wait(15000)
-    local GetAlias =  VORPcore.Callback.TriggerAwait('mms-shownames:callback:GetCurrentName')
-    if GetAlias ~= '' then
-        Alias = GetAlias
-    end
 end)
 
 VORPcore.Callback.Register('mms-shownames:callback:RecivePlayerPedID', function(cb)
@@ -33,17 +32,11 @@ RegisterCommand(Config.ToggleCommand,function()
 end)
 
 RegisterCommand(Config.ToggleAliasCommand,function()
-    local GetAlias =  VORPcore.Callback.TriggerAwait('mms-shownames:callback:ToggleAlias')
-    if GetAlias ~= '' then
-        Alias = GetAlias
-    end
+    TriggerServerEvent('mms-shownames:server:ToggleAlias')
 end)
 
 RegisterCommand(Config.DeleteAliasCommand,function()
-    local GetAlias =  VORPcore.Callback.TriggerAwait('mms-shownames:callback:DeleteMyAlias')
-    if GetAlias ~= '' then
-        Alias = GetAlias
-    end
+    TriggerServerEvent('mms-shownames:server:DeleteAlias')
 end)
 
 Citizen.CreateThread(function ()
@@ -51,28 +44,23 @@ Citizen.CreateThread(function ()
         local sleep = 500
         Citizen.Wait(sleep)
         while ShowText do
-            Citizen.Wait(3)
+            Citizen.Wait(1)
             local MyPos = GetEntityCoords(PlayerPedId())
             for h,v in ipairs(AllPlayerData) do
-                local PedPos = GetEntityCoords(v.Ped)
                 local isPedCrouching = GetPedCrouchMovement(v.Ped)
                 local isPedInCover = IsPedInCover(v.Ped)
                 local isPedInRagdoll = IsPedRagdoll(v.Ped)
-                local Distance = #(MyPos - PedPos)
-                local Name = v.Name
-                if Alias ~= '' then
-                    Name = Alias
-                end
+                local Distance = #(MyPos - v.Coords)
                 local Displaytext = ''
                 if Config.DisplayType == 1 then
                     Displaytext = v.Name
                 elseif Config.DisplayType == 2 then
-                    Displaytext = Name .. ' [' .. v.ServerID .. ']'
+                    Displaytext = v.Name .. ' [' .. v.ServerID .. ']'
                 elseif Config.DisplayType == 3 then
-                    Displaytext = Name .. ' [' .. v.CharID .. ']'
+                    Displaytext = v.Name .. ' [' .. v.CharID .. ']'
                 end
                 if Distance <= Config.ShowNamesDistance and not isPedInCover and not isPedInRagdoll and isPedCrouching == 0 then
-                    DrawText3D(PedPos.x, PedPos.y, PedPos.z + Config.TextOffset, Displaytext, Config.TextColor)
+                    DrawText3D(v.Coords.x, v.Coords.y, v.Coords.z + Config.TextOffset, Displaytext, Config.TextColor)
                 end
             end
         end
