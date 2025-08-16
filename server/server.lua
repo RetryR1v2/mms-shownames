@@ -35,7 +35,7 @@ Citizen.CreateThread(function ()
                 end
             end
         end
-        Citizen.Wait(1)
+        Citizen.Wait(5000)
     end
 end)
 

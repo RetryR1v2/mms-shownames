@@ -21,6 +21,17 @@ local AllPlayerData = {}
 RegisterNetEvent('mms-shownames:client:UpdateAllPlayerData')
 AddEventHandler('mms-shownames:client:UpdateAllPlayerData',function(ServerData)
     AllPlayerData = ServerData
+    for h,v in ipairs(AllPlayerData) do
+        local ServerID = tonumber(v.ServerID)
+        local Index = h
+        for h,ClientPlayer in ipairs(GetActivePlayers()) do
+            local ped = GetPlayerPed(ClientPlayer)
+            local serverId = GetPlayerServerId(ClientPlayer)
+            if ServerID == serverId then
+                AllPlayerData[Index].Ped = ped
+            end
+        end
+    end
 end)
 
 RegisterCommand(Config.ToggleCommand,function()
@@ -47,10 +58,11 @@ Citizen.CreateThread(function ()
             Citizen.Wait(1)
             local MyPos = GetEntityCoords(PlayerPedId())
             for h,v in ipairs(AllPlayerData) do
+                local PedPos = GetEntityCoords(v.Ped)
                 local isPedCrouching = GetPedCrouchMovement(v.Ped)
                 local isPedInCover = IsPedInCover(v.Ped)
                 local isPedInRagdoll = IsPedRagdoll(v.Ped)
-                local Distance = #(MyPos - v.Coords)
+                local Distance = #(MyPos - PedPos)
                 local Displaytext = ''
                 if Config.DisplayType == 1 then
                     Displaytext = v.Name
@@ -60,7 +72,7 @@ Citizen.CreateThread(function ()
                     Displaytext = v.Name .. ' [' .. v.CharID .. ']'
                 end
                 if Distance <= Config.ShowNamesDistance and not isPedInCover and not isPedInRagdoll and isPedCrouching == 0 then
-                    DrawText3D(v.Coords.x, v.Coords.y, v.Coords.z + Config.TextOffset, Displaytext, Config.TextColor)
+                    DrawText3D(PedPos.x, PedPos.y, PedPos.z + Config.TextOffset, Displaytext, Config.TextColor)
                 end
             end
         end

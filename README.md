@@ -15,6 +15,8 @@
 
 - 1.1.0 Initial Release
 - 1.1.1 Fixed some Errors
+- 1.1.2 Fixed the Delay
+- Fixed the Crouch and Cover and Ragdoll Bug.
 
 # installation 
 
