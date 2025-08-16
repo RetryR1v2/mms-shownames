@@ -30,11 +30,15 @@ Citizen.CreateThread(function ()
                         end
                         local PlayerData = { Ped = PlayerPed, Coords = Coords, Name = Name, CharID = CharID, ServerID = ServerID, SteamID = SteamID }
                         table.insert(AllPlayerData,PlayerData)
-                        TriggerClientEvent('mms-shownames:client:UpdateAllPlayerData',v,AllPlayerData)
                     end
                 end
             end
         end
+        Citizen.Wait(1000)
+        for h,v in ipairs(GetPlayers()) do
+            TriggerClientEvent('mms-shownames:client:UpdateAllPlayerData',v,AllPlayerData)
+        end
+
         Citizen.Wait(5000)
     end
 end)
