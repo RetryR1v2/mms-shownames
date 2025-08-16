@@ -17,6 +17,8 @@
 - 1.1.1 Fixed some Errors
 - 1.1.2 Fixed the Delay
 - Fixed the Crouch and Cover and Ragdoll Bug.
+- 1.1.3 Added Command to Disable Own Name Above Head
+- Added Config to Show on Server Join by Default or Even
 
 # installation 
 

@@ -1,9 +1,14 @@
 local VORPcore = exports.vorp_core:GetCore()
 
 local ShowText = false
+local ShowOwnName = false
 
 if Config.ShowTextOnStart then
     ShowText = true
+end
+
+if Config.ShowOwnNameOnStart then
+    ShowOwnName = true
 end
 
 RegisterNetEvent('vorp:SelectedCharacter')
@@ -42,6 +47,14 @@ RegisterCommand(Config.ToggleCommand,function()
     end
 end)
 
+RegisterCommand(Config.ToggleOwnNameCommand,function()
+    if ShowOwnName then
+        ShowOwnName = false
+    else
+        ShowOwnName = true
+    end
+end)
+
 RegisterCommand(Config.ToggleAliasCommand,function()
     TriggerServerEvent('mms-shownames:server:ToggleAlias')
 end)
@@ -71,7 +84,9 @@ Citizen.CreateThread(function ()
                 elseif Config.DisplayType == 3 then
                     Displaytext = v.Name .. ' [' .. v.CharID .. ']'
                 end
-                if Distance <= Config.ShowNamesDistance and not isPedInCover and not isPedInRagdoll and isPedCrouching == 0 then
+                if ShowOwnName and Distance <= Config.ShowNamesDistance and not isPedInCover and not isPedInRagdoll and isPedCrouching == 0 then
+                    DrawText3D(PedPos.x, PedPos.y, PedPos.z + Config.TextOffset, Displaytext, Config.TextColor)
+                elseif not ShowOwnName and Distance > 0.2 and Distance <= Config.ShowNamesDistance and not isPedInCover and not isPedInRagdoll and isPedCrouching == 0 then
                     DrawText3D(PedPos.x, PedPos.y, PedPos.z + Config.TextOffset, Displaytext, Config.TextColor)
                 end
             end
