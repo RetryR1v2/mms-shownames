@@ -68,7 +68,7 @@ Citizen.CreateThread(function ()
         local sleep = 500
         Citizen.Wait(sleep)
         while ShowText do
-            Citizen.Wait(1)
+            Citizen.Wait(5)
             local MyPos = GetEntityCoords(PlayerPedId())
             for h,v in ipairs(AllPlayerData) do
                 local PedPos = GetEntityCoords(v.Ped)
@@ -77,6 +77,7 @@ Citizen.CreateThread(function ()
                 local isPedInRagdoll = IsPedRagdoll(v.Ped)
                 local Distance = #(MyPos - PedPos)
                 local Displaytext = ''
+                local TextOffset = Config.TextOffset
                 if Config.DisplayType == 1 then
                     Displaytext = v.Name
                 elseif Config.DisplayType == 2 then
@@ -84,10 +85,16 @@ Citizen.CreateThread(function ()
                 elseif Config.DisplayType == 3 then
                     Displaytext = v.Name .. ' [' .. v.CharID .. ']'
                 end
+                if IsPedInAnyVehicle(v.Ped) then
+                    TextOffset = TextOffset + 0.9
+                end
+                if IsPedOnMount(v.Ped) then
+                    TextOffset = TextOffset + 0.9
+                end
                 if ShowOwnName and Distance <= Config.ShowNamesDistance and not isPedInCover and not isPedInRagdoll and isPedCrouching == 0 then
-                    DrawText3D(PedPos.x, PedPos.y, PedPos.z + Config.TextOffset, Displaytext, Config.TextColor)
+                    DrawText3D(PedPos.x, PedPos.y, PedPos.z + TextOffset, Displaytext, Config.TextColor)
                 elseif not ShowOwnName and Distance > 0.2 and Distance <= Config.ShowNamesDistance and not isPedInCover and not isPedInRagdoll and isPedCrouching == 0 then
-                    DrawText3D(PedPos.x, PedPos.y, PedPos.z + Config.TextOffset, Displaytext, Config.TextColor)
+                    DrawText3D(PedPos.x, PedPos.y, PedPos.z + TextOffset, Displaytext, Config.TextColor)
                 end
             end
         end

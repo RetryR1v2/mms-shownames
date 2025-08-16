@@ -31,7 +31,7 @@ Config.ShowOwnNameOnStart = true -- If by Default Own Name should be there
 
 Config.TextColor = {125, 255, 125}  -- RGB Color Code
 Config.Scale = 0.5
-Config.TextOffset = 1.0 -- 0-2.0  0 is Mid of Fed 1.0 is Above Ped
+Config.TextOffset = 1.1 -- 0-2.0  0 is Mid of Fed 1.0 is Above Ped
 Config.Textfont = 1 --0-5
 
 
